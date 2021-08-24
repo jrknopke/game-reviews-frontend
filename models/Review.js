@@ -39,7 +39,7 @@ class Review {
         }
 
         fetch("http://localhost:3000/reviews", configObj)
-        .then(resp => resp.json)
+        .then(resp => resp.json())
         .then(json => {
             e.target.children[0].value = ""
             e.target.children[1].value = ""
@@ -47,8 +47,28 @@ class Review {
         })
     }
 
-    static createComment(){
+    static createComment(e){
+        e.preventDefault();
 
+        let params = {
+            comment: {
+                content: e.target.children[0].value,
+                review_id: this.id
+            }
+        }
+
+        let configObj = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(params)
+        }
+
+        fetch(`http://localhost:3000/reviews/${this.id}/comments`, configObj)
+        .then(resp => resp.json())
+        .then(reviewsInfo =>  Review.renderReviews(reviewsInfo))
     }
 
     static renderReviews(reviewsInfo){
@@ -102,7 +122,7 @@ class Review {
         })
     }
 
-    static likeReview(event){
+    static likeReview(e){
         this.likes += 1
 
         let params = {
@@ -125,7 +145,7 @@ class Review {
         .then(reviewsInfo => Review.renderReviews(reviewsInfo))
     }
 
-    static deleteReview(event){
+    static deleteReview(e){
         let configObj = {
             method: "DELETE",
             headers: {
